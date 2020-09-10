@@ -1,7 +1,7 @@
 # Hasura Connect Cache Interceptor
  
 
-## Implementations [[more]](https://pub.dev/packages?q=dependency%3Ashared_preferences)
+## Official Implementations [[others]](https://pub.dev/packages?q=dependency%3Ashared_preferences)
 - Using Shared Preferences [[shared_preferences_cache_interceptor]](https://pub.dev/packages/shared_preferences)
 - Using Hive [[hasura_hive_cache_interceptor]](https://pub.dev/packages/shared_preferences)
 
