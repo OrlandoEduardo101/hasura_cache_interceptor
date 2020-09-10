@@ -2,9 +2,9 @@
  
 
 ## Official Implementations
-- Using Shared Preferences [[shared_preferences_cache_interceptor]](https://pub.dev/packages/shared_preferences)
-- Using Hive [[hasura_hive_cache_interceptor]](https://pub.dev/packages/shared_preferences)
-- [[others]](https://pub.dev/packages?q=dependency%3Ashared_preferences)
+- Using Shared Preferences [[shared_preferences_cache_interceptor]](https://pub.dev/packages/shared_preferences_cache_interceptor)
+- Using Hive [[hasura_hive_cache_interceptor]](https://pub.dev/packages/hive_cache_interceptor)
+- [[others]](https://pub.dev/packages?q=dependency%3hasura_cache_interceptor)
 
 ## In Memory Cache (without persistence)
 pubspec.yaml
