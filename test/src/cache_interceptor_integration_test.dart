@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hasura_cache_interceptor/hasura_hive_cache_interceptor.dart';
+import 'package:hasura_cache_interceptor/hasura_cache_interceptor.dart';
 import 'package:hasura_cache_interceptor/src/cache_interceptor.dart';
 import 'package:hasura_cache_interceptor/src/services/storage_service_interface.dart';
 import 'package:hasura_connect/hasura_connect.dart';

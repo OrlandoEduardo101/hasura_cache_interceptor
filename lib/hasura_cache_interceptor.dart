@@ -1,7 +1,5 @@
 library hasura_cache_interceptor;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/cache_interceptor.dart';
+export 'src/services/memory_storage_service.dart';
+export 'src/services/storage_service_interface.dart';

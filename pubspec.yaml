@@ -1,6 +1,6 @@
 name: hasura_cache_interceptor
 description: Package to implements cache in Hasura package
-version: 1.0.0-dev.2
+version: 1.0.0-dev.3
 author: F-Team <david@flutterando.com.br>
 homepage: https://flutterando.com.br
 repository: https://github.com/Flutterando/hasura_cache_interceptor
@@ -11,18 +11,14 @@ environment:
 
 dependencies:
   uuid: ^2.2.0
-  path_provider: ^1.6.11
-  shared_preferences: ^0.5.8
-  hive: ^1.4.4
-  hasura_connect: #^2.0.0-dev.17.6
-    git: https://github.com/Flutterando/hasura_connect
-    # path: C:\projects\flutterando\hasura_connect
+  hasura_connect: #^2.0.0-dev.17.5
+    git: 
+      url: https://github.com/Flutterando/hasura_connect
+      ref: 231c4afb82d6bca047a3ab2d54245ffc8df641cd
   flutter:
     sdk: flutter
 
-# dependency_override:
-#   hasura_connect:
-#     path: C:\projects\flutterando\hasura_connect
+  
 
 dev_dependencies:
   mockito: ^4.1.1

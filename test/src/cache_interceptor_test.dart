@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hasura_cache_interceptor/src/cache_interceptor.dart';
-import 'package:hasura_cache_interceptor/src/services/memory_storage_service.dart';
+import 'package:hasura_cache_interceptor/src/services/storage_service_interface.dart';
 import 'package:hasura_connect/hasura_connect.dart';
 import 'package:hasura_connect/src/domain/models/query.dart';
 import 'package:mockito/mockito.dart';
 import 'package:uuid/uuid.dart';
 
-class MockStorageService extends Mock implements MemoryStorageService {}
+class MockStorageService extends Mock implements IStorageService {}
 
 void main() {
   final storage = MockStorageService();
@@ -149,7 +149,7 @@ void main() {
       snapshotMock.listen((_) {});
       snapshotMock.add(responseMock);
 
-      await Future.delayed(Duration(milliseconds: 2000));
+      await Future.delayed(Duration(milliseconds: 500));
 
       expect(cacheMock[key], responseMock);
     });
