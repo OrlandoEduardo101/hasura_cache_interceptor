@@ -10,10 +10,7 @@ environment:
 
 dependencies:
   uuid: ^2.2.0
-  hasura_connect: #^2.0.0-dev.17.5
-    git: 
-      url: https://github.com/Flutterando/hasura_connect
-      ref: 231c4afb82d6bca047a3ab2d54245ffc8df641cd
+  hasura_connect: ">=2.0.0-dev.17.6 <3.0.0"
 
 dev_dependencies:
   mockito: ^4.1.1
