@@ -2,10 +2,10 @@
  
 
 ## Implementations [[more]](https://pub.dev/packages?q=dependency%3Ashared_preferences)
-### Using Shared Preferences [[shared_preferences_cache_interceptor]](https://pub.dev/packages/shared_preferences)
-### Using Hive [[hasura_hive_cache_interceptor]](https://pub.dev/packages/shared_preferences)
+- Using Shared Preferences [[shared_preferences_cache_interceptor]](https://pub.dev/packages/shared_preferences)
+- Using Hive [[hasura_hive_cache_interceptor]](https://pub.dev/packages/shared_preferences)
 
-## Use Example
+## In Memory Cache (without persistence)
 pubspec.yaml
 ```yaml
 dependencies:
@@ -13,7 +13,7 @@ dependencies:
   hasura_cache_interceptor: <last version>
 ```
 
-### In Memory Cache (without persistence)
+you_file.dart
 ```dart
 import 'package:hasura_cache_interceptor/hasura_hive_cache_interceptor.dart';
 
