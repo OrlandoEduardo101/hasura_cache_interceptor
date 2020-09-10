@@ -1,9 +1,10 @@
 # Hasura Connect Cache Interceptor
  
 
-## Official Implementations [[others]](https://pub.dev/packages?q=dependency%3Ashared_preferences)
+## Official Implementations
 - Using Shared Preferences [[shared_preferences_cache_interceptor]](https://pub.dev/packages/shared_preferences)
 - Using Hive [[hasura_hive_cache_interceptor]](https://pub.dev/packages/shared_preferences)
+- [[others]](https://pub.dev/packages?q=dependency%3Ashared_preferences)
 
 ## In Memory Cache (without persistence)
 pubspec.yaml
