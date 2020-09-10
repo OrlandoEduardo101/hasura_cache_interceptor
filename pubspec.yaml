@@ -7,7 +7,6 @@ repository: https://github.com/Flutterando/hasura_cache_interceptor
 
 environment:
   sdk: ">=2.8.1 <3.0.0"
-  flutter: ">=1.17.0 <2.0.0"
 
 dependencies:
   uuid: ^2.2.0
@@ -15,14 +14,7 @@ dependencies:
     git: 
       url: https://github.com/Flutterando/hasura_connect
       ref: 231c4afb82d6bca047a3ab2d54245ffc8df641cd
-  flutter:
-    sdk: flutter
-
-  
 
 dev_dependencies:
   mockito: ^4.1.1
-  flutter_test:
-    sdk: flutter
-
-flutter:
+  test: ^1.15.3
