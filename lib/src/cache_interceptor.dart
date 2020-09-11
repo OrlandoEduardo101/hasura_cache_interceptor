@@ -17,14 +17,16 @@ class CacheInterceptor implements Interceptor {
 
   @override
   Future onError(HasuraError error) async {
-    final isConnectionError = (error.message == "Connection Rejected");
-    final containsCache = await _storage.containsKey(error.request.url);
+    final isConnectionError = [
+      "Connection Rejected",
+      "Websocket Error",
+    ].contains(error.message);
 
+    final containsCache = await _storage.containsKey(error.request.url);
     if (isConnectionError && containsCache) {
       final cachedData = await _storage.get(error.request.url);
       return Response(data: cachedData);
     }
-
     return error;
   }
 
@@ -50,7 +52,7 @@ class CacheInterceptor implements Interceptor {
     }
 
     snapshot.rootStream = snapshot.rootStream
-        .map((data) => _updateSubscriptionCache(key, data));
+        .asyncMap((data) async => _updateSubscriptionCache(key, data));
   }
 
   Future _updateSubscriptionCache(String key, dynamic data) async {

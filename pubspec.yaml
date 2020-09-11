@@ -1,6 +1,6 @@
 name: hasura_cache_interceptor
 description: Package to implements cache in Hasura package
-version: 1.0.0-dev.3
+version: 1.0.0-dev.4
 author: F-Team <david@flutterando.com.br>
 homepage: https://flutterando.com.br
 repository: https://github.com/Flutterando/hasura_cache_interceptor
