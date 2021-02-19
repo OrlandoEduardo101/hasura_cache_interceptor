@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 import '../../../lib/src/services/memory_storage_service.dart';
 
 void main() {
-  MemoryStorageService storage;
+  MemoryStorageService storage = MemoryStorageService();
 
   setUp(() {
     storage = MemoryStorageService();

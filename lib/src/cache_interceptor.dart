@@ -25,7 +25,7 @@ class CacheInterceptor implements Interceptor {
     final containsCache = await _storage.containsKey(error.request.url);
     if (isConnectionError && containsCache) {
       final cachedData = await _storage.get(error.request.url);
-      return Response(data: cachedData);
+      return Response(data: cachedData, statusCode: 500, request: error.request);
     }
     return error;
   }
@@ -50,8 +50,7 @@ class CacheInterceptor implements Interceptor {
       final cachedData = await _storage.get(key);
       snapshot.add(cachedData);
     }
-
-    snapshot.rootStream = snapshot.rootStream
+    snapshot = snapshot
         .asyncMap((data) async => _updateSubscriptionCache(key, data));
   }
 

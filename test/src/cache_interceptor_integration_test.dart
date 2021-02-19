@@ -1,12 +1,11 @@
 import 'dart:convert';
-
 import 'package:hasura_cache_interceptor/hasura_cache_interceptor.dart';
 import 'package:hasura_cache_interceptor/src/cache_interceptor.dart';
 import 'package:hasura_cache_interceptor/src/services/storage_service_interface.dart';
 import 'package:hasura_connect/hasura_connect.dart';
 import 'package:http/http.dart' as http;
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockStorageService extends Mock implements IStorageService {}
 
@@ -16,13 +15,15 @@ void main() {
   final storage = MockStorageService();
   final httpClient = MockHttpClient();
   final cacheInterceptor = CacheInterceptor(storage);
-  HasuraConnect service;
+  HasuraConnect service = HasuraConnect(
+      "https://www.youtube.com/c/flutterando",
+      interceptors: [cacheInterceptor],
+    );
   setUp(() {
-    when(httpClient.close()).thenReturn(() {});
+    when(httpClient).calls(#close).thenReturn(() {});
     service = HasuraConnect(
       "https://www.youtube.com/c/flutterando",
       interceptors: [cacheInterceptor],
-      httpClient: httpClient,
     );
   });
 
@@ -34,14 +35,16 @@ void main() {
     test(" no cache, throws exception", () async {
       final mockResponse = http.Response("", 404);
       when(
-        httpClient.post(
-          any,
-          body: anyNamed("body"),
-          headers: anyNamed("headers"),
-        ),
+        httpClient
+      ).calls(#post).withArgs(
+        positional: [any],
+        named: {
+          #body:  any,
+          #headers: any
+        }
       ).thenAnswer((realInvocation) async => mockResponse);
 
-      when(storage.containsKey(any))
+      when(storage).calls(#containsKey).withArgs(positional: [any])
           .thenAnswer((realInvocation) async => false);
 
       expect(service.query("query"), throwsException);
@@ -51,14 +54,15 @@ void main() {
       final cache = {"cache_mock_key": "cache_mock_value"};
       final mockResponse = http.Response("", 404);
       when(
-        httpClient.post(
-          any,
-          body: anyNamed("body"),
-          headers: anyNamed("headers"),
-        ),
+        httpClient).calls(#post).withArgs(
+        positional: [any],
+        named: {
+          #body:  any,
+          #headers: any
+        }
       ).thenAnswer((realInvocation) async => mockResponse);
-      when(storage.containsKey(any)).thenAnswer((realInvocation) async => true);
-      when(storage.get(any)).thenAnswer((realInvocation) async => cache);
+      when(storage).calls(#containsKey).withArgs(positional: [any]).thenAnswer((realInvocation) async => true);
+      when(storage).calls(#get).withArgs(positional: [any]).thenAnswer((realInvocation) async => cache);
 
       expect(await service.query("query"), cache);
     });
@@ -68,16 +72,19 @@ void main() {
     test("no cache, return real response", () async {
       final realResponse = {"mock_key": "mock_value"};
 
-      when(httpClient.post(
-        any,
-        body: anyNamed("body"),
-        headers: anyNamed("headers"),
-      )).thenAnswer(
+      when(httpClient
+      ).calls(#post).withArgs(
+        positional: [any],
+        named: {
+          #body:  any,
+          #headers: any
+        }
+      ).thenAnswer(
         (realInvocation) async {
           return http.Response(jsonEncode(realResponse), 200);
         },
       );
-      when(storage.containsKey(any))
+      when(storage).calls(#containsKey).withArgs(positional: [any])
           .thenAnswer((realInvocation) async => false);
 
       expect(await service.query("query"), realResponse);
@@ -88,16 +95,18 @@ void main() {
       final cache = {"cache_mock_key": "cache_mock_value"};
 
       when(
-        httpClient.post(
-          any,
-          body: anyNamed("body"),
-          headers: anyNamed("headers"),
-        ),
+        httpClient
+      ).calls(#post).withArgs(
+        positional: [any],
+        named: {
+          #body:  any,
+          #headers: any
+        }
       ).thenAnswer(
         (realInvocation) async => http.Response(jsonEncode(realResponse), 200),
       );
-      when(storage.containsKey(any)).thenAnswer((realInvocation) async => true);
-      when(storage.get(any)).thenAnswer((realInvocation) async => cache);
+      when(storage).calls(#containsKey).withArgs(positional: [any]).thenAnswer((realInvocation) async => true);
+      when(storage).calls(#get).withArgs(positional: [any]).thenAnswer((realInvocation) async => cache);
 
       expect(await service.query("query"), realResponse);
     });
