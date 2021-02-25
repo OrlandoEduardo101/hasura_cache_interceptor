@@ -28,7 +28,7 @@ void main() {
   });
 
   tearDown(() async {
-    await cacheInterceptor.clearAllCache();
+    //await cacheInterceptor.clearAllCache();
   });
 
   group("no connection and", () {
@@ -72,27 +72,22 @@ void main() {
     test("no cache, return real response", () async {
       final realResponse = {"mock_key": "mock_value"};
 
-      when(httpClient
-      ).calls(#post).withArgs(
+      when(httpClient).calls(#post).withArgs(
         positional: [any],
-        named: {
-          #body:  any,
-          #headers: any
-        }
+        
       ).thenAnswer(
         (realInvocation) async {
           return http.Response(jsonEncode(realResponse), 200);
         },
       );
-      when(storage).calls(#containsKey).withArgs(positional: [any])
-          .thenAnswer((realInvocation) async => false);
+      when(storage).calls(#containsKey).thenAnswer((realInvocation) async => false);
 
       expect(await service.query("query"), realResponse);
     });
 
     test("have cache, return real response", () async {
       final realResponse = {"mock_key": "mock_value"};
-      final cache = {"cache_mock_key": "cache_mock_value"};
+      //final cache = {"cache_mock_key": "cache_mock_value"};
 
       when(
         httpClient
@@ -106,7 +101,7 @@ void main() {
         (realInvocation) async => http.Response(jsonEncode(realResponse), 200),
       );
       when(storage).calls(#containsKey).withArgs(positional: [any]).thenAnswer((realInvocation) async => true);
-      when(storage).calls(#get).withArgs(positional: [any]).thenAnswer((realInvocation) async => cache);
+      when(storage).calls(#get).withArgs(positional: [any]).thenAnswer((realInvocation) async => realResponse);
 
       expect(await service.query("query"), realResponse);
     });

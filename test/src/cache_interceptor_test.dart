@@ -10,25 +10,25 @@ class MockStorageService extends Mock implements IStorageService {}
 
 void main() {
   final storage = MockStorageService();
-  CacheInterceptor cacheInterceptor;
+  late CacheInterceptor cacheInterceptor;
   setUp(() {
     cacheInterceptor = CacheInterceptor(storage);
   });
 
   tearDown(() async {
-    await cacheInterceptor.clearAllCache();
+   // await cacheInterceptor.clearAllCache();
   });
 
   group("onError -", () {
     test("Erro genérico", () async {
-      when(storage).calls(#containsKey).withArgs(positional: [any])
+      when(storage).calls(#containsKey)
           .thenAnswer((realInvocation) async => false);
 
       final requestMock = Request(url: "", query: Query(document: "query"));
       final error = HasuraRequestError.fromException(
         "Generic Error",
         Exception("Generic Error"),
-        Request: requestMock,
+        request: requestMock,
       );
 
       final response = await cacheInterceptor.onError(error);
@@ -44,7 +44,7 @@ void main() {
         final error = HasuraRequestError.fromException(
           "Connection Rejected",
           Exception("Connection Rejected"),
-          Request: request,
+          request: request,
         );
 
         final response = await cacheInterceptor.onError(error);
@@ -63,7 +63,7 @@ void main() {
         final error = HasuraRequestError.fromException(
           "Connection Rejected",
           Exception("Connection Rejected"),
-          Request: request,
+          request: request,
         );
 
         final Response response = await cacheInterceptor.onError(error);
@@ -82,6 +82,7 @@ void main() {
 
       final responseMock = Response(
         request: requestMock,
+        statusCode: 200,
         data: {"mock_key": "mock_value"},
       );
 
@@ -102,15 +103,14 @@ void main() {
 
   group("onSubscription -", () {
     test("Deve mostrar o cache e depois o response original", () async {
-      final requestMock =
-          Request(url: "mock_url", query: Query(document: "query"));
-      final snapshotMock = Snapshot(Query: requestMock.query);
+      final requestMock = Request(url: "mock_url", query: Query(document: "query"));
+      final snapshotMock = Snapshot(query: requestMock.query);
       final key = Uuid().v5(requestMock.url, requestMock.query.toString());
       final Map cacheMock = {key: '{"cache_mock_key": "cache_mock_value"}'};
       final Map responseMock = {"mock_key": "mock_value"};
 
-      when(storage).calls(#containsKey).withArgs(positional: [any]).thenAnswer((realInvocation) async => true);
-      when(storage).calls(#get).withArgs(positional: [any]).thenAnswer((realInvocation) async => cacheMock);
+      when(storage).calls(#containsKey).thenAnswer((realInvocation) async => true);
+      when(storage).calls(#get).thenAnswer((realInvocation) async => cacheMock);
 
       await cacheInterceptor.onSubscription(
         requestMock,
@@ -125,7 +125,7 @@ void main() {
     test("Deve salvar o cache", () async {
       final requestMock =
           Request(url: "mock_url", query: Query(document: "query"));
-      final snapshotMock = Snapshot(Query: requestMock.query);
+      final snapshotMock = Snapshot(query: requestMock.query);
       final key = Uuid().v5(requestMock.url, requestMock.query.toString());
       final Map cacheMock = {key: '{"cache_mock_key": "cache_mock_value"}'};
 
