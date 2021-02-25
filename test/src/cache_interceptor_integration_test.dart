@@ -15,10 +15,7 @@ void main() {
   final storage = MockStorageService();
   final httpClient = MockHttpClient();
   final cacheInterceptor = CacheInterceptor(storage);
-  HasuraConnect service = HasuraConnect(
-      "https://www.youtube.com/c/flutterando",
-      interceptors: [cacheInterceptor],
-    );
+  late HasuraConnect service;
   setUp(() {
     when(httpClient).calls(#close).thenReturn(() {});
     service = HasuraConnect(
@@ -74,11 +71,13 @@ void main() {
 
       when(httpClient).calls(#post).withArgs(
         positional: [any],
-        
+        named: {
+          #body: any,
+          #headers: any
+        }
       ).thenAnswer(
-        (realInvocation) async {
-          return http.Response(jsonEncode(realResponse), 200);
-        },
+        (realInvocation) async => http.Response(jsonEncode(realResponse), 200)
+        ,
       );
       when(storage).calls(#containsKey).thenAnswer((realInvocation) async => false);
 
@@ -87,7 +86,8 @@ void main() {
 
     test("have cache, return real response", () async {
       final realResponse = {"mock_key": "mock_value"};
-      //final cache = {"cache_mock_key": "cache_mock_value"};
+      final cache = {"cache_mock_key": "cache_mock_value"};
+      //final mockResponse = http.Response("", 200);
 
       when(
         httpClient
@@ -101,7 +101,7 @@ void main() {
         (realInvocation) async => http.Response(jsonEncode(realResponse), 200),
       );
       when(storage).calls(#containsKey).withArgs(positional: [any]).thenAnswer((realInvocation) async => true);
-      when(storage).calls(#get).withArgs(positional: [any]).thenAnswer((realInvocation) async => realResponse);
+      when(storage).calls(#get).withArgs(positional: [any]).thenAnswer((realInvocation) async => cache);
 
       expect(await service.query("query"), realResponse);
     });
