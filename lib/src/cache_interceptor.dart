@@ -18,10 +18,14 @@ class CacheInterceptor implements Interceptor {
 
   @override
   Future? onError(HasuraError error) async {
-    final isConnectionError = [
+    bool isConnectionError = [
       "Connection Rejected",
       "Websocket Error",
     ].contains(error.message);
+
+    isConnectionError = isConnectionError ||
+        error.message
+            .contains('No address associated with hostname, errno = 7');
 
     final containsCache = await _storage.containsKey(error.request.url);
     if (isConnectionError && containsCache) {
