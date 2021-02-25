@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'services/storage_service_interface.dart';
 
 class CacheInterceptor implements Interceptor {
+  static const NAMESPACE_KEY = "b34a217c-f439-50b1-b1c1-4e491a72d05f";
   final IStorageService _storage;
   CacheInterceptor(this._storage);
 
@@ -43,19 +44,21 @@ class CacheInterceptor implements Interceptor {
 
   @override
   Future<void>? onSubscription(Request request, Snapshot snapshot) async {
-    final key = Uuid().v5(request.url, snapshot.query.toString());
+    final key = Uuid().v5(NAMESPACE_KEY, "${request.url}: ${snapshot.query}");
     final containsCache = await _storage.containsKey(key);
 
     if (containsCache) {
       final cachedData = await _storage.get(key);
       snapshot.add(cachedData);
     }
-    snapshot = Snapshot(
-        query: snapshot.query,
-        changeVariablesF: snapshot.changeVariablesF,
-        closeConnection: snapshot.closeConnection,
-        rootStream: snapshot
-            .asyncMap((data) async => _updateSubscriptionCache(key, data)));
+    final subscription = snapshot.listen((data) => _updateSubscriptionCache(key, data));
+    snapshot.listen((_) {}, onDone: () => subscription.cancel());
+    // snapshot = Snapshot(
+    //   query: snapshot.query,
+    //   changeVariablesF: snapshot.changeVariablesF,
+    //   closeConnection: snapshot.closeConnection,
+    //   rootStream: snapshot.asyncMap((data) async => _updateSubscriptionCache(key, data)),
+    // );
   }
 
   Future? _updateSubscriptionCache(String key, dynamic data) async {

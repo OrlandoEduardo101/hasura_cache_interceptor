@@ -14,9 +14,7 @@ class MemoryStorageService implements IStorageService {
 
   @override
   Future<void> remove(String key) async {
-    if (db.containsKey(key)) {
-      db.remove(key);
-    }
+    if (db.containsKey(key)) db.remove(key);
   }
 
   @override
