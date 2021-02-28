@@ -24,9 +24,9 @@ class CacheInterceptor implements Interceptor {
         error.message
             .contains('No address associated with hostname, errno = 7');
 
-    final containsCache = await _storage.containsKey(error.request.url);
+    final containsCache = await _storage.containsKey(error.request.url + error.request.query.key.toString());
     if (isConnectionError && containsCache) {
-      final cachedData = await _storage.read(error.request.url + error.request.type.index.toString());
+      final cachedData = await _storage.read(error.request.url + error.request.query.key.toString());
       return Response(
           data: cachedData, request: error.request, statusCode: 200);
     }
@@ -40,7 +40,7 @@ class CacheInterceptor implements Interceptor {
 
   @override
   Future? onResponse(Response data) async {
-    _storage.put(data.request.url + data.request.type.index.toString(), data.data);
+    _storage.put(data.request.url + data.request.query.key.toString(), data.data);
     return data;
   }
 
