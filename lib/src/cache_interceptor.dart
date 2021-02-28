@@ -23,13 +23,12 @@ class CacheInterceptor implements Interceptor {
       "Websocket Error",
     ].contains(error.message);
 
-    isConnectionError = isConnectionError ||
-        error.message
-            .contains('No address associated with hostname, errno = 7');
+    isConnectionError = isConnectionError || error.message.contains('No address associated with hostname, errno = 7');
 
-    final containsCache = await _storage.containsKey(error.request.url);
+    String key = generateKey(error.request);
+    final containsCache = await _storage.containsKey(key);
     if (isConnectionError && containsCache) {
-      final cachedData = await _storage.get(error.request.url);
+      final cachedData = await _storage.get(key);
       return Response(data: cachedData, statusCode: 500, request: error.request);
     }
     return error;
@@ -42,15 +41,16 @@ class CacheInterceptor implements Interceptor {
 
   @override
   Future? onResponse(Response data) async {
-    _storage.put(data.request.url, data.data);
+    String key = generateKey(data.request);
+    _storage.put(key, data.data);
     return data;
   }
 
   @override
   Future<void>? onSubscription(Request request, Snapshot snapshot) async {
-    final key = Uuid().v5(NAMESPACE_KEY, "${request.url}: ${snapshot.query}");
-    final containsCache = await _storage.containsKey(key);
+    String key = generateKey(request);
 
+    final containsCache = await _storage.containsKey(key);
     if (containsCache) {
       final cachedData = await _storage.get(key);
       snapshot.add(cachedData);
@@ -71,6 +71,12 @@ class CacheInterceptor implements Interceptor {
       await _storage.put(key, data);
     }
     return data;
+  }
+
+  String generateKey(Request request) {
+    final keyIsNullOrEmpty = request.query.key == null || request.query.key!.isEmpty;
+    String key = Uuid().v5(NAMESPACE_KEY, "${request.url}: ${keyIsNullOrEmpty ? request.query : request.query.key}");
+    return key;
   }
 
   @override
