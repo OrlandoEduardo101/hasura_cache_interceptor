@@ -53,7 +53,7 @@ void main() {
   });
 
   group("onResponse -", () {
-    test("Deve salvar o cache", () async {
+    test("Sem Key na Query - Deve salvar o cache", () async {
       final requestMock = Request(url: "mock_url", query: Query(document: "mock_request_document"));
       final responseMock = Response(
         request: requestMock,
@@ -62,6 +62,7 @@ void main() {
           "mock_key": "mock_value"
         },
       );
+      final key = Uuid().v5(CacheInterceptor.NAMESPACE_KEY, "${requestMock.url}: ${requestMock.query}");
       final Map cacheMock = {};
       when(storage).calls(#put).thenAnswer(
         (realInvocation) async {
@@ -73,7 +74,32 @@ void main() {
 
       await cacheInterceptor.onResponse(responseMock);
       expect(cacheMock, {
-        requestMock.url: responseMock.data
+        key: responseMock.data
+      });
+    });
+
+    test("Com Key na Query - Deve salvar o cache", () async {
+      final requestMock = Request(url: "mock_url", query: Query(document: "mock_request_document", key: "mock_query_key"));
+      final responseMock = Response(
+        request: requestMock,
+        statusCode: 200,
+        data: {
+          "mock_key": "mock_value"
+        },
+      );
+      final key = Uuid().v5(CacheInterceptor.NAMESPACE_KEY, "${requestMock.url}: ${requestMock.query.key}");
+      final Map cacheMock = {};
+      when(storage).calls(#put).thenAnswer(
+        (realInvocation) async {
+          final key = realInvocation.positionalArguments[0];
+          final value = realInvocation.positionalArguments[1];
+          cacheMock[key] = value;
+        },
+      );
+
+      await cacheInterceptor.onResponse(responseMock);
+      expect(cacheMock, {
+        key: responseMock.data
       });
     });
   });
