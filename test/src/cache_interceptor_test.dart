@@ -1,7 +1,6 @@
 import 'package:hasura_cache_interceptor/src/cache_interceptor.dart';
 import 'package:hasura_cache_interceptor/src/services/storage_service_interface.dart';
 import 'package:hasura_connect/hasura_connect.dart';
-import 'package:hasura_connect/src/domain/models/query.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
@@ -22,7 +21,7 @@ void main() {
 
   group("onError -", () {
     test("Erro genérico", () async {
-      when(storage).calls(#containsKey).thenAnswer((realInvocation) async => false);
+      when(() => storage.containsKey(any())).thenAnswer((realInvocation) async => false);
       final requestMock = Request(url: "", query: Query(document: "query"));
       final error = HasuraRequestError.fromException("Generic Error", Exception("Generic Error"), request: requestMock);
       final response = await cacheInterceptor.onError(error);
@@ -30,7 +29,7 @@ void main() {
     });
     group("Sem conexão:", () {
       test("Sem cache salvo deve retornar a exceção", () async {
-        when(storage).calls(#containsKey).thenAnswer((realInvocation) async => false);
+        when(() => storage.containsKey(any())).thenAnswer((realInvocation) async => false);
         final request = Request(url: "", query: Query(document: "query"));
         final error = HasuraRequestError.fromException("Connection Rejected", Exception("Connection Rejected"), request: request);
         final response = await cacheInterceptor.onError(error);
@@ -41,8 +40,8 @@ void main() {
           "cache_mock_key": "cache_mock_value"
         };
 
-        when(storage).calls(#containsKey).thenAnswer((realInvocation) async => true);
-        when(storage).calls(#get).thenAnswer((realInvocation) async => cachedData);
+        when(() => storage.containsKey(any())).thenAnswer((realInvocation) async => true);
+        when(() => storage.get(any())).thenAnswer((realInvocation) async => cachedData);
 
         final request = Request(url: "", query: Query(document: "query"));
         final error = HasuraRequestError.fromException("Connection Rejected", Exception("Connection Rejected"), request: request);
@@ -64,7 +63,7 @@ void main() {
       );
       final key = Uuid().v5(CacheInterceptor.NAMESPACE_KEY, "${requestMock.url}: ${requestMock.query}");
       final Map cacheMock = {};
-      when(storage).calls(#put).thenAnswer(
+      when(() => storage.put(any(), any())).thenAnswer(
         (realInvocation) async {
           final key = realInvocation.positionalArguments[0];
           final value = realInvocation.positionalArguments[1];
@@ -89,7 +88,7 @@ void main() {
       );
       final key = Uuid().v5(CacheInterceptor.NAMESPACE_KEY, "${requestMock.url}: ${requestMock.query.key}");
       final Map cacheMock = {};
-      when(storage).calls(#put).thenAnswer(
+      when(() => storage.put(any(), any())).thenAnswer(
         (realInvocation) async {
           final key = realInvocation.positionalArguments[0];
           final value = realInvocation.positionalArguments[1];
@@ -116,9 +115,9 @@ void main() {
         "mock_key": "mock_value"
       };
 
-      when(storage).calls(#containsKey).thenAnswer((realInvocation) async => cacheMock.containsKey(realInvocation.positionalArguments.first));
-      when(storage).calls(#get).thenAnswer((realInvocation) async => cacheMock[realInvocation.positionalArguments.first]);
-      when(storage).calls(#put).thenAnswer((realInvocation) async {});
+      when(() => storage.containsKey(any())).thenAnswer((realInvocation) async => cacheMock.containsKey(realInvocation.positionalArguments.first));
+      when(() => storage.get(any())).thenAnswer((realInvocation) async => cacheMock[realInvocation.positionalArguments.first]);
+      when(() => storage.put(any(), any())).thenAnswer((realInvocation) async {});
 
       await cacheInterceptor.onSubscription(requestMock, snapshotMock);
 
@@ -141,9 +140,9 @@ void main() {
         "mock_key": "mock_value"
       };
 
-      when(storage).calls(#containsKey).thenAnswer((realInvocation) async => true);
-      when(storage).calls(#get).thenAnswer((realInvocation) async => cacheMock);
-      when(storage).calls(#put).thenAnswer(
+      when(() => storage.containsKey(any())).thenAnswer((realInvocation) async => true);
+      when(() => storage.get(any())).thenAnswer((realInvocation) async => cacheMock);
+      when(() => storage.put(any(), any())).thenAnswer(
         (realInvocation) async {
           final key = realInvocation.positionalArguments[0];
           final value = realInvocation.positionalArguments[1];
