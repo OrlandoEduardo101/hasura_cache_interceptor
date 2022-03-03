@@ -6,11 +6,16 @@ import 'package:test/test.dart';
 import 'package:uuid/uuid.dart';
 
 class MockStorageService extends Mock implements IStorageService {}
+class HasuraConnectMock extends Mock implements HasuraConnect {
+  
+}
 
 void main() {
   late MockStorageService storage;
   late CacheInterceptor cacheInterceptor;
+  late HasuraConnect hasuraConnect;
   setUp(() {
+    hasuraConnect = HasuraConnectMock();
     storage = MockStorageService();
     cacheInterceptor = CacheInterceptor(storage);
   });
@@ -24,7 +29,7 @@ void main() {
       when(() => storage.containsKey(any())).thenAnswer((realInvocation) async => false);
       final requestMock = Request(url: "", query: Query(document: "query"));
       final error = HasuraRequestError.fromException("Generic Error", Exception("Generic Error"), request: requestMock);
-      final response = await cacheInterceptor.onError(error);
+      final response = await cacheInterceptor.onError(error, hasuraConnect);
       expect(response, error);
     });
     group("Sem conexão:", () {
@@ -32,7 +37,7 @@ void main() {
         when(() => storage.containsKey(any())).thenAnswer((realInvocation) async => false);
         final request = Request(url: "", query: Query(document: "query"));
         final error = HasuraRequestError.fromException("Connection Rejected", Exception("Connection Rejected"), request: request);
-        final response = await cacheInterceptor.onError(error);
+        final response = await cacheInterceptor.onError(error, hasuraConnect);
         expect(response, error);
       });
       test("Com cache salvo deve retornar o cache", () async {
@@ -45,7 +50,7 @@ void main() {
 
         final request = Request(url: "", query: Query(document: "query"));
         final error = HasuraRequestError.fromException("Connection Rejected", Exception("Connection Rejected"), request: request);
-        final Response response = await cacheInterceptor.onError(error);
+        final Response response = await cacheInterceptor.onError(error, hasuraConnect);
         expect(response.data, cachedData);
       });
     });
@@ -71,7 +76,7 @@ void main() {
         },
       );
 
-      await cacheInterceptor.onResponse(responseMock);
+      await cacheInterceptor.onResponse(responseMock, hasuraConnect);
       expect(cacheMock, {
         key: responseMock.data
       });
@@ -96,7 +101,7 @@ void main() {
         },
       );
 
-      await cacheInterceptor.onResponse(responseMock);
+      await cacheInterceptor.onResponse(responseMock, hasuraConnect);
       expect(cacheMock, {
         key: responseMock.data
       });

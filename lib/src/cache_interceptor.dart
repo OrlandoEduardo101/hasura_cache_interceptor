@@ -17,7 +17,7 @@ class CacheInterceptor implements Interceptor {
   Future<void>? onDisconnected() async {}
 
   @override
-  Future? onError(HasuraError error) async {
+  Future? onError(HasuraError error, HasuraConnect connect) async {
     bool isConnectionError = [
       "Connection Rejected",
       "Websocket Error",
@@ -35,12 +35,12 @@ class CacheInterceptor implements Interceptor {
   }
 
   @override
-  Future? onRequest(Request request) async {
+  Future? onRequest(Request request, HasuraConnect connect) async {
     return request;
   }
 
   @override
-  Future? onResponse(Response data) async {
+  Future? onResponse(Response data, HasuraConnect connect) async {
     String key = generateKey(data.request);
     _storage.put(key, data.data);
     return data;
